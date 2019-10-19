@@ -1,0 +1,29 @@
+{
+  "name": "test000",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "nodemon": "^1.19.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build:server && npm run build && node dist/index.js",
+    "dev": "nodemon --exec babel-node src/index.js",
+    "build": "webpack --mode production",
+    "watch": "webpack --watch --mode development",
+    "build:server": "babel src -d dist"
+  },
+  "author": "",
+  "license": "ISC"
+}
