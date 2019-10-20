@@ -17,8 +17,9 @@ class Game
 
     start() {
         this.started = true;
-        this.ball = new Ball(600, 400);
-        this.loop = setInterval((game) => game.update(), 1, this);
+        this.ball = new Ball(445, 295, this);
+        this.ball.start();
+        this.loop = setInterval((game) => game.update(), 10, this);
         this.player1.setup();
         this.player2.setup();
     }
@@ -54,10 +55,15 @@ class Game
 
     playerUpdate(side, y) {
         if (side) {
-            this.player1.sendUpdate(y);
+            this.player1.sendOppUpdate(y);
         } else {
-            this.player2.sendUpdate(y)
+            this.player2.sendOppUpdate(y)
         }
+    }
+
+    sendBallUpdate(x, y) {
+        this.player1.sendBallUpdate(x, y);
+        this.player2.sendBallUpdate(x, y);
     }
 }
 

@@ -40,8 +40,12 @@ class Player
         this.socket.emit('setup', {y: this.y, side: this.side})
     }
 
-    sendUpdate(oppx) {
-        this.socket.emit('update', {opp: oppx})
+    sendOppUpdate(oppx) {
+        this.socket.emit('opponent update', {opp: oppx})
+    }
+
+    sendBallUpdate(x, y) {
+        this.socket.emit('ball update', {x, y})
     }
 }
 

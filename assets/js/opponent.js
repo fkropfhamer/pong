@@ -8,7 +8,7 @@ class Opponent
         }
 
         this.y = 200;
-        this.color= 'blue';
+        this.color= 'red';
     }
 
     update(y) {

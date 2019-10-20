@@ -55,7 +55,7 @@ const init = () => {
     /*game.setup();
     game.draw();
 
-    //window.requestAnimationFrame(gameLoop);
+    //
 */
 
 

@@ -16,8 +16,6 @@ class Game
 
         //this.socket = socket;
 
-       this.x = 0;
-
         this.started = false;
     }
 
@@ -27,15 +25,19 @@ class Game
         socket.on('connected', socket => {
             console.log('connected');
         })
-        socket.on('update', msg => {
-            console.log(msg);
+        socket.on('opponent update', msg => {
+            //console.log(msg);
             this.opponent.update(msg.opp);
         })
+        socket.on('ball update', data => {
+            //console.log(data);
+            this.ball.update(data.x, data.y);
+        })
         socket.on('test', msg => {
-            console.log(msg);
+            //console.log(msg);
         })
         socket.on('setup', data => {
-            console.log(data);
+            //console.log(data);
             this.side = data.side;
             this.setup();
             window.requestAnimationFrame(g);
@@ -45,7 +47,7 @@ class Game
     }
 
     setup() {
-        this.ball = new Ball(400, 100);
+        this.ball = new Ball(445, 295);
         this.player = new Player(this.side, this.socket);
         this.opponent = new Opponent(!this.side);
     }
@@ -56,10 +58,8 @@ class Game
     }*/
 
     draw() {
-        this.x++;
-        this.x %= 800;
         this.canvas.reset();
-        this.canvas.drawRect(this.x, this.x, 200, 200, '#FF0000');
+        this.player.update();
         this.player.draw(this.canvas);
         this.opponent.draw(this.canvas);
         this.ball.draw(this.canvas);
