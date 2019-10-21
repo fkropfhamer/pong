@@ -1,5 +1,5 @@
 ## requires nodejs and npm 
-## to install first run npm install and then npm start 
+## to install first run `npm install` and then `npm start` 
 ## now it it is reachable in the browser: localhost:8080
 
 
