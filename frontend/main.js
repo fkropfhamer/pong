@@ -1,10 +1,6 @@
 import './style.css'
 import * as signalR from '@microsoft/signalr'
 
-document.querySelector('#app').innerHTML = `
-  <h1>Hello Vite!</h1>
-  <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
-`
 
 
 async function main() {
@@ -14,13 +10,47 @@ async function main() {
     console.log(data)
   })
 
+  connection.on("message", data => {
+    console.log(data)
+  })
+
+  const chatMessagesList = document.querySelector('#chat-messages')
+
+  connection.on("ReceiveMessage", (username, message) => {
+     const node = document.createElement('li')
+     node.appendChild(document.createTextNode(`${username}: ${message}`))
+     chatMessagesList.appendChild(node)
+  })
+
   await connection.start()
 
   connection.invoke("Echo", "Hello")
+  //connection.invoke("Connect")
 
 
-  document.querySelector('#button').onclick = () => {
-    connection.invoke("Echo", "Haha")
+  document.querySelector('#chat-button').onclick = () => {
+    const message = document.querySelector('#chat-input').value
+
+    if (!message) {
+      return
+    }
+
+    connection.invoke("SendMessage", message)
+
+    document.querySelector('#chat-input').value = ""
+  }
+
+  document.querySelector('#username-button').onclick = () => {
+    const username = document.querySelector('#username-input').value
+
+    if (!username) {
+      return
+    }
+
+    connection.invoke("Join", username)
+
+    document.querySelector('#username').hidden = true
+    document.querySelector('#chat').hidden = false
   }
 
 }

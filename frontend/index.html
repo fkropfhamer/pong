@@ -7,8 +7,17 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div id="app"></div>
-    <button id="button">Button</button>
+    <div id="username">
+    <h2>Enter Username</h2>
+    <input id="username-input">
+    <button id="username-button">submit</button>
+  </div>
+    <div id="chat" hidden>
+      <h2>chat</h2>
+      <input id="chat-input"/>
+      <button id="chat-button">send</button>
+      <ul id="chat-messages"></ul>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
