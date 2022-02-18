@@ -13,17 +13,20 @@
   <div v-else>
     Connecting...
   </div>
+  <Game :connection="{connection}"/>
 </template>
 
 <script>
 import * as signalR from "@microsoft/signalr";
 import Username from "./Username.vue";
 import Chat from "./Chat.vue";
+import Game from "./Game.vue";
 
 export default {
   components: {
     Username,
-    Chat
+    Chat,
+    Game,
   },
   data() {
     return {
