@@ -10,6 +10,7 @@
     "vite": "^2.7.2"
   },
   "dependencies": {
-    "@microsoft/signalr": "^6.0.1"
+    "@microsoft/signalr": "^6.0.1",
+    "@vitejs/plugin-vue": "^2.2.0"
   }
 }
