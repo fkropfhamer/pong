@@ -1,14 +1,7 @@
 <template>
   <div v-if="connection">
     <div v-if="hasUsername">
-      <h2>chat</h2>
-      <input v-model="message" />
-      <button @click="submitMessage">send</button>
-      <ul>
-        <li v-for="(message, index) in messages" :key="index">
-          {{ `${message.username}: ${message.message}` }}
-        </li>
-      </ul>
+      <Chat :connection="{connection}"/>
     </div>
     <div v-else>
       <Username @username-set="onUsernameSet"/>
@@ -20,18 +13,18 @@
 <script>
 import * as signalR from "@microsoft/signalr";
 import Username from "./Username.vue";
+import Chat from "./Chat.vue";
 
 export default {
   components: {
-    Username
+    Username,
+    Chat
   },
   data() {
     return {
       username: "",
       connection: null,
       hasUsername: false,
-      messages: [],
-      message: "",
     };
   },
 
@@ -44,11 +37,6 @@ export default {
       console.log(data);
     });
 
-    connection.on("ReceiveMessage", (username, message) => {
-      console.log(message);
-      this.messages.push({ username, message });
-    });
-
     await connection.start();
 
     this.connection = connection;
@@ -57,13 +45,6 @@ export default {
   },
 
   methods: {
-    submitMessage: function () {
-      if (this.message) {
-        this.connection.invoke("SendMessage", this.message);
-
-        this.message = "";
-      }
-    },
     onUsernameSet: function (username) {
       this.username = username
       this.connection.invoke("Join", this.username);
