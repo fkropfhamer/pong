@@ -1,5 +1,5 @@
 <template>
-  <div v-if="connection">
+  <div v-if="connection && !isDisconnected">
     <div v-if="hasUsername">
       <Chat :connection="{connection}"/>
     </div>
@@ -7,7 +7,12 @@
       <Username @username-set="onUsernameSet"/>
     </div>
   </div>
-  <div v-else>Connecting...</div>
+  <div v-else-if="isDisconnected">
+    Disconnected
+  </div>
+  <div v-else>
+    Connecting...
+  </div>
 </template>
 
 <script>
@@ -25,6 +30,7 @@ export default {
       username: "",
       connection: null,
       hasUsername: false,
+      isDisconnected: true,
     };
   },
 
@@ -37,9 +43,14 @@ export default {
       console.log(data);
     });
 
-    await connection.start();
+    connection.onclose(() => {
+      this.isDisconnected = true;
+    })
 
+    await connection.start();
+    this.isDisconnected = false
     this.connection = connection;
+    
 
     connection.invoke("Echo", "Hello");
   },
