@@ -46,7 +46,7 @@ async fn user_connected(ws: WebSocket, users: Users) {
       while let Some(message) = rx.next().await {
           user_ws_tx
               .send(message)
-              .unwrap_or_else(|e| {})
+              .unwrap_or_else(|_e| {})
               .await;
       }
   });
@@ -60,7 +60,7 @@ async fn user_connected(ws: WebSocket, users: Users) {
   while let Some(result) = user_ws_rx.next().await {
       let msg = match result {
           Ok(msg) => msg,
-          Err(e) => { break; }
+          Err(_e) => { break; }
       };
 
       user_message(&mut user, msg, &users).await;
