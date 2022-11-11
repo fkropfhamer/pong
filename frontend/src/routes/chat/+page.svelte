@@ -15,7 +15,7 @@
         if (!socket) {
             return
         }
-        socket.send(JSON.stringify({ event: "message", payload: "message"}))
+        socket.send(JSON.stringify({ event: "message", payload: message}))
         const myMessage = { username: "you", text: message }
         messages = [...messages, myMessage]
         message = ""
