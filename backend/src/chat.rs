@@ -55,6 +55,7 @@ async fn user_connected(ws: WebSocket, users: Users) {
     id: my_id,
     username: format!("<User#{}>", my_id),
   };
+  
   users.write().await.insert(my_id, tx);
 
   while let Some(result) = user_ws_rx.next().await {
