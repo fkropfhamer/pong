@@ -110,7 +110,7 @@ async fn send_message(user: &User, message: String, users: &Users) {
 
   for (&uid, rx) in users.read().await.iter() {
       if user.id != uid {
-          if let Err(_disconnected) = rx.send(Message::text(new_msg.clone())) {}
+        if let Err(_disconnected) = rx.send(Message::text(new_msg.clone())) {}
       }
   }
 }
