@@ -40,10 +40,10 @@ const startButton = document.getElementById("start");
     });
 
     const vertices = new Float32Array([
-        // X,    Y,   R,   G,   B,
-        -0.8, -0.8, 0.0, 1.0, 0.0,
-         0.8, -0.8, 0.0, 1.0, 0.0,
-         0.8,  0.8, 0.0, 1.0, 0.0,
+        // X,    Y,    R,   G,   B,
+        -0.8, -0.8,  0.0, 1.0, 0.0,
+         0.8, -0.8,  0.0, 1.0, 0.0,
+         0.8,  0.8,  0.0, 1.0, 0.0,
     ]);
 
     const vertexBuffer = device.createBuffer({
@@ -111,10 +111,10 @@ const startButton = document.getElementById("start");
         });
 
         const vertices = new Float32Array([
-            // X,    Y,   R,   G,   B,
-            -0.8, -0.8, 0.0, 0.0, 1.0,
-            -0.8, 0.8, 0.0, 0.0, 1.0,
-            0.8,  0.8, 0.0, 0.0, 1.0,
+            // X,    Y,    R,   G,   B,
+            -0.8, -0.8,  0.0, 0.0, 1.0,
+            -0.8,  0.8,  0.0, 0.0, 1.0,
+             0.8,  0.8,  0.0, 0.0, 1.0,
         ]);
 
         const vertexBuffer = device.createBuffer({
