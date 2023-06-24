@@ -1,6 +1,7 @@
 import './style.css'
 import rectangleShader from './rectangle.wgsl?raw'
 import middleLineShader from './middleLine.wgsl?raw'
+import paddleShader from './paddle.wgsl?raw'
 
 console.log("Hello World")
 
@@ -126,6 +127,50 @@ const startButton = document.getElementById("start");
     pass.setPipeline(middleLinePipeline)
     pass.draw(2)
 
+    const uniformArray = new Float32Array([-0.5, 0, 0.5, 0]);
+    const uniformBuffer = device.createBuffer({
+        label: "Grid Uniforms",
+        size: uniformArray.byteLength,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    device.queue.writeBuffer(uniformBuffer, 0, uniformArray);
+
+
+
+    const paddleShaderModule = device.createShaderModule({
+        label: 'paddle shader',
+        code: paddleShader
+    });
+
+    const paddlePipeline = device.createRenderPipeline({
+        label: "paddle",
+        layout: "auto",
+        vertex: {
+            module: paddleShaderModule,
+            entryPoint: "vertexMain",
+        },
+        fragment: {
+            module: paddleShaderModule,
+            entryPoint: "fragmentMain",
+            targets: [{
+                format: canvasFormat
+            }]
+        }
+    });
+
+    const bindGroup = device.createBindGroup({
+        label: "Cell renderer bind group",
+        layout: paddlePipeline.getBindGroupLayout(0),
+        entries: [{
+            binding: 0,
+            resource: { buffer: uniformBuffer }
+        }],
+    });
+
+    pass.setPipeline(paddlePipeline)
+    pass.setBindGroup(0, bindGroup)
+    pass.draw(6, 2)
+
     pass.end()
     device.queue.submit([encoder.finish()]);
 
@@ -163,6 +208,13 @@ const startButton = document.getElementById("start");
         pass.setPipeline(cellPipeline);
         pass.setVertexBuffer(0, vertexBuffer);
         pass.draw(6);
+
+        const uniformArray = new Float32Array([-0.5, 0.2, 0.5, -0.1]);
+        device.queue.writeBuffer(uniformBuffer, 0, uniformArray);
+
+        pass.setPipeline(paddlePipeline)
+        pass.setBindGroup(0, bindGroup)
+        pass.draw(6, 2)
 
         pass.end()
         device.queue.submit([encoder.finish()]);
