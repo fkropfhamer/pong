@@ -1,5 +1,6 @@
 import './style.css'
 import rectangleShader from './rectangle.wgsl?raw'
+import middleLineShader from './middleLine.wgsl?raw'
 
 console.log("Hello World")
 
@@ -35,7 +36,7 @@ const startButton = document.getElementById("start");
             view: context.getCurrentTexture().createView(),
             loadOp: "clear",
             storeOp: "store",
-            clearValue: { r: 1, g: 0, b: 0, a: 1 },
+            clearValue: { r: 0, g: 0, b: 0, a: 1 },
         }]
     });
 
@@ -44,10 +45,14 @@ const startButton = document.getElementById("start");
         -0.8, -0.8,  0.0, 1.0, 0.0,
          0.8, -0.8,  0.0, 1.0, 0.0,
          0.8,  0.8,  0.0, 1.0, 0.0,
+
+        -0.8, -0.8,  0.0, 1.0, 0.0,
+         0.8,  0.8,  0.0, 1.0, 0.0,
+        -0.8,  0.8,  0.0, 1.0, 0.0,
     ]);
 
     const vertexBuffer = device.createBuffer({
-        label: "Cell vertices",
+        label: "vertices",
         size: vertices.byteLength,
         usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
@@ -69,7 +74,7 @@ const startButton = document.getElementById("start");
     };
 
     const cellShaderModule = device.createShaderModule({
-        label: 'Cell shader',
+        label: 'Rectangle shader',
         code: rectangleShader
     });
 
@@ -92,11 +97,37 @@ const startButton = document.getElementById("start");
 
     pass.setPipeline(cellPipeline);
     pass.setVertexBuffer(0, vertexBuffer);
-    pass.draw(3);
+    pass.draw(6);
+
+    const middleLineShaderModule = device.createShaderModule({
+        label: 'middle line shader',
+        code: middleLineShader
+    });
+
+    const middleLinePipeline = device.createRenderPipeline({
+        label: "middle-line",
+        layout: "auto",
+        vertex: {
+            module: middleLineShaderModule,
+            entryPoint: "vertexMain",
+        },
+        fragment: {
+            module: middleLineShaderModule,
+            entryPoint: "fragmentMain",
+            targets: [{
+                format: canvasFormat
+            }]
+        },
+        primitive: {
+            topology: "line-list"
+        }
+    })
+
+    pass.setPipeline(middleLinePipeline)
+    pass.draw(2)
 
     pass.end()
     device.queue.submit([encoder.finish()]);
-    console.log('finished')
 
 
     startButton.onclick = () => {
@@ -106,7 +137,7 @@ const startButton = document.getElementById("start");
                 view: context.getCurrentTexture().createView(),
                 loadOp: "clear",
                 storeOp: "store",
-                clearValue: { r: 1, g: 0, b: 0, a: 1 },
+                clearValue: { r: 0, g: 0, b: 0, a: 1 },
             }]
         });
 
@@ -115,10 +146,14 @@ const startButton = document.getElementById("start");
             -0.8, -0.8,  0.0, 0.0, 1.0,
             -0.8,  0.8,  0.0, 0.0, 1.0,
              0.8,  0.8,  0.0, 0.0, 1.0,
+
+            -0.8, -0.8,  1.0, 1.0, 1.0,
+             0.8, -0.8,  1.0, 1.0, 1.0,
+             0.8,  0.8,  1.0, 1.0, 1.0,
         ]);
 
         const vertexBuffer = device.createBuffer({
-            label: "Cell vertices",
+            label: "2 vertices",
             size: vertices.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
         });
@@ -127,7 +162,7 @@ const startButton = document.getElementById("start");
 
         pass.setPipeline(cellPipeline);
         pass.setVertexBuffer(0, vertexBuffer);
-        pass.draw(3);
+        pass.draw(6);
 
         pass.end()
         device.queue.submit([encoder.finish()]);
