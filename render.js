@@ -1,4 +1,3 @@
-import rectangleShader from './rectangle.wgsl?raw'
 import middleLineShader from './middleLine.wgsl?raw'
 import paddleShader from './paddle.wgsl?raw'
 
