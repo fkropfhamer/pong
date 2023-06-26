@@ -16,6 +16,7 @@ import {WsClient} from "./socket.js";
     const gameState = {
         paddle1Y: 0,
         paddle2Y: 0,
+        ballPosition: { x: 0, y: 0 }
     }
 
     renderer.render(gameState)
