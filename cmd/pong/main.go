@@ -91,6 +91,12 @@ func webSocketHandler(ws *websocket.Conn) {
 				c.Game.Stop()
 			}
 
+			waitMu.Lock()
+			if isWaiting {
+				waiting = nil
+			}
+			waitMu.Unlock()
+
 			break
 		}
 
@@ -114,10 +120,10 @@ func webSocketHandler(ws *websocket.Conn) {
 				waiting = nil
 			} else {
 				waiting = &c
-				if err := websocket.Message.Send(ws, "waiting"); err != nil {
-					fmt.Println("can not send")
-					return
+				message := gameMessage{
+					Message: "waiting",
 				}
+				waiting.SendMessage(message)
 				isWaiting = true
 			}
 			waitMu.Unlock()
