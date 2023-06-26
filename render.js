@@ -162,6 +162,8 @@ export class WebGPURenderer {
         const ballUniformArray = new Float32Array([ballPosition.x, ballPosition.y]);
         this.device.queue.writeBuffer(this.ballUniformBuffer, 0, ballUniformArray);
 
+        console.log(ballPosition)
+
         pass.setPipeline(this.ballPipeline)
         pass.setBindGroup(0, this.ballPositionBindGroup)
         pass.draw(6)

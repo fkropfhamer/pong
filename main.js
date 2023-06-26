@@ -21,7 +21,16 @@ import {WsClient} from "./socket.js";
 
     renderer.render(gameState)
 
-    const client = new WsClient()
+    const onUpdate = (payload) => {
+        console.log(payload)
+
+        gameState.ballPosition.x = payload.BallPos[0] / 5000
+        gameState.ballPosition.y = payload.BallPos[1] / 5000
+
+        requestAnimationFrame(() => renderer.render(gameState))
+    }
+
+    const client = new WsClient(onUpdate)
 
     startButton.onclick = () => {
         gameState.paddle1Y -= 0.1

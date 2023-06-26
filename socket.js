@@ -4,7 +4,7 @@ const parseMessage = async (e) => {
 }
 
 export class WsClient {
-    constructor() {
+    constructor(onUpdate) {
         this.ws = new WebSocket("ws://localhost:8080")
         this.ws.onopen = () => {
             console.log("open")
@@ -23,6 +23,10 @@ export class WsClient {
             try {
                 const message = await parseMessage(e);
                 console.log(message)
+                if (message.Message === "update") {
+                    onUpdate(message.Payload)
+                }
+
             } catch (e) {
                 console.log(e)
             }
