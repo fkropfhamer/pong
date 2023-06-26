@@ -21,7 +21,8 @@ struct VertexOutput {
 
 @vertex
 fn vertexMain(input: VertexInput) -> VertexOutput {
-    var posOffset = vec2f(positions[0], positions[1]);
+    var indexOffset = input.instance * 2;
+    var posOffset = vec2f(positions[indexOffset], positions[indexOffset + 1]);
 
     var pos = rectangle[input.index] + posOffset;
 
