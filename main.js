@@ -135,8 +135,6 @@ const startButton = document.getElementById("start");
     });
     device.queue.writeBuffer(uniformBuffer, 0, uniformArray);
 
-
-
     const paddleShaderModule = device.createShaderModule({
         label: 'paddle shader',
         code: paddleShader
@@ -218,6 +216,8 @@ const startButton = document.getElementById("start");
 
         pass.end()
         device.queue.submit([encoder.finish()]);
+
+        ws.send(JSON.stringify({message: "start", payload: "payload"}))
     }
 })()
 
@@ -235,7 +235,12 @@ ws.onerror = () => {
 }
 
 ws.onmessage = (e) => {
-    console.log("message", e)
+    console.log("message", e);
+    (async () => {
+        const t = await e.data.text()
+        const message = JSON.parse(t)
+        console.log(message)
+    })()
 }
 
 startButton.onclick = () => {

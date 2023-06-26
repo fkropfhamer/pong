@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"golang.org/x/net/websocket"
 	"log"
@@ -26,18 +27,54 @@ func echo(ws *websocket.Conn) {
 	}
 }
 
+type client struct {
+	Connection *websocket.Conn
+	Game       *game
+}
+
+func (c client) SendMessage(message interface{}) {
+	jsonMessage, err := json.Marshal(message)
+	if err != nil {
+		return
+	}
+	if err := websocket.Message.Send(c.Connection, jsonMessage); err != nil {
+		fmt.Println("can not send")
+		fmt.Println(err)
+	}
+}
+
 type wsMessage struct {
 	Message string
 	Payload string
 }
 
+type gameMessage struct {
+	Message string
+	Payload interface{}
+}
+
+type game struct {
+	Client1 *client
+	Client2 *client
+	state   gameState
+}
+
+type gameState struct {
+	BallPos  [2]float32
+	Paddle1Y float32
+	Paddle2Y float32
+}
+
 var (
 	waitMu  sync.Mutex
-	waiting *websocket.Conn
+	waiting *client
 )
 
 func webSocketHandler(ws *websocket.Conn) {
 	var isWaiting = false
+	var c = client{
+		Connection: ws,
+	}
 
 	for {
 		var message wsMessage
@@ -55,10 +92,18 @@ func webSocketHandler(ws *websocket.Conn) {
 			waitMu.Lock()
 
 			if waiting != nil {
-				go start(ws, waiting)
+				var g = game{
+					Client1: &c,
+					Client2: waiting,
+				}
+
+				go g.Start()
+
+				c.Game = &g
+				waiting.Game = &g
 				waiting = nil
 			} else {
-				waiting = ws
+				waiting = &c
 				if err := websocket.Message.Send(ws, "waiting"); err != nil {
 					fmt.Println("can not send")
 					return
@@ -72,17 +117,25 @@ func webSocketHandler(ws *websocket.Conn) {
 	}
 }
 
-func start(ws1 *websocket.Conn, ws2 *websocket.Conn) {
-	message := "started"
-	if err := websocket.Message.Send(ws1, message); err != nil {
-		fmt.Println("can not send")
-		return
+func (g *game) Update() {
+	g.state.BallPos[0] = g.state.BallPos[0] + 1
+	fmt.Println(g.state)
+}
+
+func (g *game) Start() {
+	message := gameMessage{
+		Message: "start",
+	}
+	state := gameState{
+		BallPos:  [2]float32{0, 0},
+		Paddle1Y: 0,
+		Paddle2Y: 0,
 	}
 
-	if err := websocket.Message.Send(ws2, message); err != nil {
-		fmt.Println("can not send")
-		return
-	}
+	g.state = state
+
+	g.Client1.SendMessage(message)
+	g.Client2.SendMessage(message)
 
 	ticker := time.NewTicker(10 * time.Millisecond)
 	quit := make(chan struct{})
@@ -90,14 +143,15 @@ func start(ws1 *websocket.Conn, ws2 *websocket.Conn) {
 		for {
 			select {
 			case <-ticker.C:
-				if err := websocket.Message.Send(ws1, "update"); err != nil {
-					fmt.Println("can not send")
-					return
+				g.Update()
+				updateMessage := gameMessage{
+					Message: "update",
+					Payload: g.state,
 				}
-				if err := websocket.Message.Send(ws2, "update"); err != nil {
-					fmt.Println("can not send")
-					return
-				}
+
+				g.Client1.SendMessage(updateMessage)
+				g.Client2.SendMessage(updateMessage)
+
 			case <-quit:
 				ticker.Stop()
 				return
