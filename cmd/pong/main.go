@@ -28,8 +28,9 @@ func echo(ws *websocket.Conn) {
 }
 
 type client struct {
-	Connection *websocket.Conn
-	Game       *game
+	Connection     *websocket.Conn
+	Game           *game
+	IsDisconnected bool
 }
 
 func (c client) SendMessage(message interface{}) {
@@ -54,9 +55,10 @@ type gameMessage struct {
 }
 
 type game struct {
-	Client1 *client
-	Client2 *client
-	state   gameState
+	Client1  *client
+	Client2  *client
+	state    gameState
+	stopChan chan bool
 }
 
 type gameState struct {
@@ -73,7 +75,8 @@ var (
 func webSocketHandler(ws *websocket.Conn) {
 	var isWaiting = false
 	var c = client{
-		Connection: ws,
+		Connection:     ws,
+		IsDisconnected: false,
 	}
 
 	for {
@@ -81,6 +84,13 @@ func webSocketHandler(ws *websocket.Conn) {
 		if err := websocket.JSON.Receive(ws, &message); err != nil {
 			fmt.Println("can not receive")
 			fmt.Println(err)
+
+			c.IsDisconnected = true
+			fmt.Println("disconnected")
+			if c.Game != nil {
+				c.Game.Stop()
+			}
+
 			break
 		}
 
@@ -122,6 +132,11 @@ func (g *game) Update() {
 	fmt.Println(g.state)
 }
 
+func (g *game) Stop() {
+	g.stopChan <- true
+	fmt.Println("stop game")
+}
+
 func (g *game) Start() {
 	message := gameMessage{
 		Message: "start",
@@ -138,7 +153,7 @@ func (g *game) Start() {
 	g.Client2.SendMessage(message)
 
 	ticker := time.NewTicker(10 * time.Millisecond)
-	quit := make(chan struct{})
+	g.stopChan = make(chan bool)
 	go func() {
 		for {
 			select {
@@ -152,7 +167,7 @@ func (g *game) Start() {
 				g.Client1.SendMessage(updateMessage)
 				g.Client2.SendMessage(updateMessage)
 
-			case <-quit:
+			case <-g.stopChan:
 				ticker.Stop()
 				return
 			}
