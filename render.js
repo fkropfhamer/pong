@@ -72,14 +72,14 @@ export class WebGPURenderer {
     }
 
     setupBallRendering(canvasFormat) {
-        const ballUniformArray = new Float32Array([0, 0]);
-        this.ballUniformBuffer = this.device.createBuffer({
-            label: "ball Uniforms",
-            size: ballUniformArray.byteLength,
+        const ballPositionsStorageArray = new Float32Array([0, 0]);
+        this.ballPositionsStorageBuffer = this.device.createBuffer({
+            label: "ball positions storage",
+            size: ballPositionsStorageArray.byteLength,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         });
 
-        this.device.queue.writeBuffer(this.ballUniformBuffer, 0, ballUniformArray);
+        this.device.queue.writeBuffer(this.ballPositionsStorageBuffer, 0, ballPositionsStorageArray);
 
         const ballShaderModule = this.device.createShaderModule({
             label: 'ball shader',
@@ -107,7 +107,7 @@ export class WebGPURenderer {
             layout: this.ballPipeline.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
-                resource: {buffer: this.ballUniformBuffer}
+                resource: {buffer: this.ballPositionsStorageBuffer}
             }],
         });
     }
@@ -159,10 +159,8 @@ export class WebGPURenderer {
         pass.setBindGroup(0, this.paddleBindGroup)
         pass.draw(6, 2)
 
-        const ballUniformArray = new Float32Array([ballPosition.x, ballPosition.y]);
-        this.device.queue.writeBuffer(this.ballUniformBuffer, 0, ballUniformArray);
-
-        console.log(ballPosition)
+        const ballPositionsStorageArray = new Float32Array([ballPosition.x, ballPosition.y]);
+        this.device.queue.writeBuffer(this.ballPositionsStorageBuffer, 0, ballPositionsStorageArray);
 
         pass.setPipeline(this.ballPipeline)
         pass.setBindGroup(0, this.ballPositionBindGroup)
