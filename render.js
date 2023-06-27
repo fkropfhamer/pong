@@ -30,7 +30,7 @@ export class WebGPURenderer {
         this.setupBallRendering(canvasFormat)
     }
 
-    setupPaddleRendering(canvasFormat) {
+    setupPaddleRendering = (canvasFormat) => {
         const paddleUniformArray = new Float32Array([-0.5, 0, 0.5, 0]);
         this.paddleUniformBuffer = this.device.createBuffer({
             label: "paddle Uniforms",
@@ -71,7 +71,7 @@ export class WebGPURenderer {
         });
     }
 
-    setupBallRendering(canvasFormat) {
+    setupBallRendering = (canvasFormat) => {
         const ballPositionsStorageArray = new Float32Array([0, 0]);
         this.ballPositionsStorageBuffer = this.device.createBuffer({
             label: "ball positions storage",
@@ -112,7 +112,7 @@ export class WebGPURenderer {
         });
     }
 
-    setupMiddleLineRendering(canvasFormat) {
+    setupMiddleLineRendering = (canvasFormat) => {
         const middleLineShaderModule = this.device.createShaderModule({
             label: 'middle line shader',
             code: middleLineShader
