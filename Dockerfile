@@ -14,8 +14,8 @@ FROM node:18-alpine AS client_build
 WORKDIR /srv/app
 
 COPY --link . .
-COPY --from=wasm_build /srv/app/pong.wasm .
-COPY --from=wasm_build /usr/local/tinygo/targets/wasm_exec.js .
+COPY --from=wasm_build /srv/app/pong.wasm ./wasm/
+COPY --from=wasm_build /usr/local/tinygo/targets/wasm_exec.js ./wasm
 
 RUN npm i
 RUN npm run build

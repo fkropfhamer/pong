@@ -1,7 +1,7 @@
-import './style.css'
+import '../style.css'
 import {WebGPURenderer} from "./render.js";
 import {WsClient} from "./socket.js";
-import {initWasm} from "./wasm.js";
+import {initWasm} from "../wasm/wasm.js";
 
 (async function() {
     const startButton = document.getElementById("start");

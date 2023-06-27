@@ -1,6 +1,6 @@
-import middleLineShader from './middleLine.wgsl?raw'
-import paddleShader from './paddle.wgsl?raw'
-import ballShader from './ball.wgsl?raw'
+import middleLineShader from '../shader/middleLine.wgsl?raw'
+import paddleShader from '../shader/paddle.wgsl?raw'
+import ballShader from '../shader/ball.wgsl?raw'
 
 export class WebGPURenderer {
     isSupported = () => {
