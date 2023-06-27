@@ -30,7 +30,8 @@ import {WsClient} from "./socket.js";
         requestAnimationFrame(() => renderer.render(gameState))
     }
 
-    const client = new WsClient(onUpdate)
+    const wsUrl = "ws://localhost:8082/pong"
+    const client = new WsClient(wsUrl, onUpdate)
 
     startButton.onclick = () => {
         gameState.paddle1Y -= 0.1

@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  nginx:
+    build:
+      context: .
+      target: client
+    ports:
+      - target: 8081
+        published: ${PORT:-8082}
+
+  backend:
+    build:
+      context: .
+      target: backend

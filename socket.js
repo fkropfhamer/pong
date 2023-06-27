@@ -4,8 +4,8 @@ const parseMessage = async (e) => {
 }
 
 export class WsClient {
-    constructor(onUpdate) {
-        this.ws = new WebSocket("ws://localhost:8080")
+    constructor(url, onUpdate) {
+        this.ws = new WebSocket(url)
         this.ws.onopen = () => {
             console.log("open")
         }

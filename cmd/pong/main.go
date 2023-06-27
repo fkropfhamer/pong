@@ -186,6 +186,6 @@ func main() {
 	fmt.Println("Hello World!")
 
 	http.Handle("/echo", websocket.Handler(echo))
-	http.Handle("/", websocket.Handler(webSocketHandler))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.Handle("/pong", websocket.Handler(webSocketHandler))
+	log.Fatal(http.ListenAndServe(":8082", nil))
 }
