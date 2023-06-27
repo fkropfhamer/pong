@@ -1,8 +1,11 @@
 import init from "./pong.wasm?init";
+import "./wasm_exec.js"
 
-const go = new Go()
-const instance = await init(go.importObject)
+export const initWasm = async () => {
+    const go = new Go()
+    const instance = await init(go.importObject)
 
-go.run(instance)
+    go.run(instance)
 
-export const { add, helloWasm, reduceData, createData } = instance.exports
+    return instance.exports
+}

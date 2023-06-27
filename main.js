@@ -1,7 +1,7 @@
 import './style.css'
 import {WebGPURenderer} from "./render.js";
 import {WsClient} from "./socket.js";
-import * as wasm from "./wasm.js";
+import {initWasm} from "./wasm.js";
 
 (async function() {
     const startButton = document.getElementById("start");
@@ -43,6 +43,7 @@ import * as wasm from "./wasm.js";
         client.sendStart()
     }
 
+    const wasm = await initWasm()
     wasm.helloWasm("max")
     console.log(wasm.add(1, 2))
     console.log(wasm.reduceData({a: 1, b: 4}))
