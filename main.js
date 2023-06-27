@@ -1,8 +1,9 @@
 import './style.css'
 import {WebGPURenderer} from "./render.js";
 import {WsClient} from "./socket.js";
+import * as wasm from "./wasm.js";
 
-(async function init() {
+(async function() {
     const startButton = document.getElementById("start");
     const canvas = document.getElementById("canvas")
 
@@ -41,4 +42,9 @@ import {WsClient} from "./socket.js";
 
         client.sendStart()
     }
+
+    wasm.helloWasm("max")
+    console.log(wasm.add(1, 2))
+    console.log(wasm.reduceData({a: 1, b: 4}))
+    console.log(wasm.createData());
 })()
