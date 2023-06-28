@@ -4,14 +4,18 @@ const parseMessage = async (e) => {
 }
 
 export class WsClient {
-    constructor(onUpdate) {
-        this.ws = new WebSocket("ws://localhost:8080")
+    open = false
+
+    constructor(url, onUpdate) {
+        this.ws = new WebSocket(url)
         this.ws.onopen = () => {
             console.log("open")
+            this.open = true
         }
 
         this.ws.onclose = () => {
             console.log("close")
+            this.open = false
         }
 
         this.ws.onerror = () => {
@@ -32,6 +36,20 @@ export class WsClient {
             }
         }
     }
+    waitForConnection = async () => {
+        const waitMS = 5000
+        return new Promise(resolve => setTimeout(() => {
+            if (this.open) {
+                resolve()
+
+                return
+            }
+
+            throw new Error("ws did not connect in time")
+        }, waitMS));
+    }
+
+    updatePaddleY = (deltaY) => this.send({ message: "updatePaddle", payload: deltaY })
 
     sendStart = () => this.send({message: "start"})
 

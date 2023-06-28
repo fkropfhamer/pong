@@ -1,13 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/fkropfhamer/pong/pkg/wspong"
 	"golang.org/x/net/websocket"
 	"log"
 	"net/http"
 	"sync"
-	"time"
 )
 
 func echo(ws *websocket.Conn) {
@@ -27,57 +26,19 @@ func echo(ws *websocket.Conn) {
 	}
 }
 
-type client struct {
-	Connection     *websocket.Conn
-	Game           *game
-	IsDisconnected bool
-}
-
-func (c client) SendMessage(message interface{}) {
-	jsonMessage, err := json.Marshal(message)
-	if err != nil {
-		return
-	}
-	if err := websocket.Message.Send(c.Connection, jsonMessage); err != nil {
-		fmt.Println("can not send")
-		fmt.Println(err)
-	}
-}
-
 type wsMessage struct {
-	Message string
-	Payload string
-}
-
-type gameMessage struct {
 	Message string
 	Payload interface{}
 }
 
-type game struct {
-	Client1  *client
-	Client2  *client
-	state    gameState
-	stopChan chan bool
-}
-
-type gameState struct {
-	BallPos  [2]float32
-	Paddle1Y float32
-	Paddle2Y float32
-}
-
 var (
 	waitMu  sync.Mutex
-	waiting *client
+	waiting *wspong.Client
 )
 
 func webSocketHandler(ws *websocket.Conn) {
 	var isWaiting = false
-	var c = client{
-		Connection:     ws,
-		IsDisconnected: false,
-	}
+	c := wspong.NewClient(ws)
 
 	for {
 		var message wsMessage
@@ -88,7 +49,7 @@ func webSocketHandler(ws *websocket.Conn) {
 			c.IsDisconnected = true
 			fmt.Println("disconnected")
 			if c.Game != nil {
-				c.Game.Stop()
+				c.Game.StopLoop()
 			}
 
 			waitMu.Lock()
@@ -108,19 +69,16 @@ func webSocketHandler(ws *websocket.Conn) {
 			waitMu.Lock()
 
 			if waiting != nil {
-				var g = game{
-					Client1: &c,
-					Client2: waiting,
-				}
+				g := wspong.NewGame(c, waiting)
 
-				go g.Start()
+				go g.StartLoop()
 
-				c.Game = &g
-				waiting.Game = &g
+				c.Game = g
+				waiting.Game = g
 				waiting = nil
 			} else {
-				waiting = &c
-				message := gameMessage{
+				waiting = c
+				message := wspong.GameMessage{
 					Message: "waiting",
 				}
 				waiting.SendMessage(message)
@@ -129,63 +87,19 @@ func webSocketHandler(ws *websocket.Conn) {
 			waitMu.Unlock()
 		}
 
+		if message.Message == "updatePaddle" {
+			deltaY := message.Payload.(float64)
+			c.Game.UpdatePaddle(c, float32(deltaY))
+		}
+
 		fmt.Println(message.Message)
 	}
-}
-
-func (g *game) Update() {
-	g.state.BallPos[0] = g.state.BallPos[0] + 1
-	fmt.Println(g.state)
-}
-
-func (g *game) Stop() {
-	g.stopChan <- true
-	fmt.Println("stop game")
-}
-
-func (g *game) Start() {
-	message := gameMessage{
-		Message: "start",
-	}
-	state := gameState{
-		BallPos:  [2]float32{0, 0},
-		Paddle1Y: 0,
-		Paddle2Y: 0,
-	}
-
-	g.state = state
-
-	g.Client1.SendMessage(message)
-	g.Client2.SendMessage(message)
-
-	ticker := time.NewTicker(10 * time.Millisecond)
-	g.stopChan = make(chan bool)
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				g.Update()
-				updateMessage := gameMessage{
-					Message: "update",
-					Payload: g.state,
-				}
-
-				g.Client1.SendMessage(updateMessage)
-				g.Client2.SendMessage(updateMessage)
-
-			case <-g.stopChan:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-
 }
 
 func main() {
 	fmt.Println("Hello World!")
 
 	http.Handle("/echo", websocket.Handler(echo))
-	http.Handle("/", websocket.Handler(webSocketHandler))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.Handle("/pong", websocket.Handler(webSocketHandler))
+	log.Fatal(http.ListenAndServe(":8082", nil))
 }

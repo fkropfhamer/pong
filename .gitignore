@@ -24,7 +24,6 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -70,3 +69,6 @@ Temporary Items
 
 # Go workspace file
 go.work
+
+pong.wasm
+wasm_exec.js
