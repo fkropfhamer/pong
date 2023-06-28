@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/fkropfhamer/pong/pkg/wspong"
 	"golang.org/x/net/websocket"
 	"log"
 	"net/http"
@@ -26,44 +26,19 @@ func echo(ws *websocket.Conn) {
 	}
 }
 
-type client struct {
-	Connection     *websocket.Conn
-	Game           *Game
-	IsDisconnected bool
-}
-
-func (c client) SendMessage(message interface{}) {
-	jsonMessage, err := json.Marshal(message)
-	if err != nil {
-		return
-	}
-	if err := websocket.Message.Send(c.Connection, jsonMessage); err != nil {
-		fmt.Println("can not send")
-		fmt.Println(err)
-	}
-}
-
 type wsMessage struct {
 	Message string
 	Payload string
 }
 
-type gameMessage struct {
-	Message string
-	Payload interface{}
-}
-
 var (
 	waitMu  sync.Mutex
-	waiting *client
+	waiting *wspong.Client
 )
 
 func webSocketHandler(ws *websocket.Conn) {
 	var isWaiting = false
-	var c = client{
-		Connection:     ws,
-		IsDisconnected: false,
-	}
+	c := wspong.NewClient(ws)
 
 	for {
 		var message wsMessage
@@ -94,7 +69,7 @@ func webSocketHandler(ws *websocket.Conn) {
 			waitMu.Lock()
 
 			if waiting != nil {
-				g := NewGame(&c, waiting)
+				g := wspong.NewGame(c, waiting)
 
 				go g.StartLoop()
 
@@ -102,8 +77,8 @@ func webSocketHandler(ws *websocket.Conn) {
 				waiting.Game = g
 				waiting = nil
 			} else {
-				waiting = &c
-				message := gameMessage{
+				waiting = c
+				message := wspong.GameMessage{
 					Message: "waiting",
 				}
 				waiting.SendMessage(message)

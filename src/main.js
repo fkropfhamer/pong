@@ -31,7 +31,7 @@ import {initWasm} from "../wasm/wasm.js";
         requestAnimationFrame(() => renderer.render(gameState))
     }
 
-    const wsUrl = "ws://localhost:8082/pong"
+    const wsUrl = "ws://localhost:8082/wspong"
     const client = new WsClient(wsUrl, onUpdate)
 
     startButton.onclick = () => {
@@ -46,6 +46,18 @@ import {initWasm} from "../wasm/wasm.js";
     const wasm = await initWasm()
     wasm.helloWasm("max")
     console.log(wasm.add(1, 2))
-    console.log(wasm.reduceData({a: 1, b: 4}))
-    console.log(wasm.createData());
+
+    const bufferSize = 2
+    const bufferPointer = wasm.getBufferPointer()
+    const wasmBuffer = new Float32Array(wasm.memory.buffer, bufferPointer, bufferSize)
+
+
+    wasm.createGame()
+
+    startButton.onclick = () => {
+        wasm.updateGame()
+
+        gameState.ballPosition = {x: wasmBuffer[0] / 50, y: wasmBuffer[1] / 50}
+        renderer.render(gameState)
+    }
 })()

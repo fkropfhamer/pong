@@ -2,21 +2,33 @@ package main
 
 import (
 	"fmt"
+	"github.com/fkropfhamer/pong/pkg/pong"
 )
 
-type data struct {
-	a int
-	b int
+const BufferSize = 2
+
+var buffer [BufferSize]float32
+
+var g *pong.Game
+
+//export getBufferPointer
+func getBufferPointer() *[BufferSize]float32 {
+	return &buffer
 }
 
-//export createData
-func createData() *data {
-	return &data{1, 2}
+//export createGame
+func createGame() {
+	g = pong.NewGame()
 }
 
-//export reduceData
-func reduceData(x data) int {
-	return x.b + x.a
+//export updateGame
+func updateGame() {
+	g.Update(0)
+
+	ballState := g.FieldState.BallPos
+
+	buffer[0] = ballState[0]
+	buffer[1] = ballState[1]
 }
 
 //export helloWasm

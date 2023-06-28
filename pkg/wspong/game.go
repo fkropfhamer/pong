@@ -1,4 +1,4 @@
-package main
+package wspong
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 )
 
 type Game struct {
-	Client1       *client
-	Client2       *client
+	Client1       *Client
+	Client2       *Client
 	FieldState    FieldState
 	stopChan      chan bool
 	ballDirection [2]float32
@@ -21,7 +21,7 @@ type FieldState struct {
 	Paddle2Y float32
 }
 
-func NewGame(c1 *client, c2 *client) *Game {
+func NewGame(c1 *Client, c2 *Client) *Game {
 	state := FieldState{
 		BallPos:  [2]float32{0, 0},
 		Paddle1Y: 0,
@@ -52,7 +52,7 @@ func (g *Game) StopLoop() {
 }
 
 func (g *Game) StartLoop() {
-	message := gameMessage{
+	message := GameMessage{
 		Message: "start",
 	}
 
@@ -65,7 +65,7 @@ func (g *Game) StartLoop() {
 			select {
 			case <-ticker.C:
 				g.Update(0)
-				updateMessage := gameMessage{
+				updateMessage := GameMessage{
 					Message: "update",
 					Payload: g.FieldState,
 				}
