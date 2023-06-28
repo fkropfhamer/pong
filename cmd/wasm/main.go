@@ -5,7 +5,7 @@ import (
 	"github.com/fkropfhamer/pong/pkg/pong"
 )
 
-const BufferSize = 2
+const BufferSize = 4
 
 var buffer [BufferSize]float32
 
@@ -29,16 +29,18 @@ func updateGame(timeDelta int) {
 
 	buffer[0] = ballState[0]
 	buffer[1] = ballState[1]
+	buffer[2] = g.FieldState.Paddle1Y
+	buffer[3] = g.FieldState.Paddle2Y
 }
 
-//export helloWasm
-func helloWasm(name string) {
-	fmt.Print(fmt.Sprintf("Hello %s from wasm!\n", name))
+//export updatePaddle1Y
+func updatePaddle1Y(delta float32) {
+	g.FieldState.Paddle1Y += delta
 }
 
-//export add
-func add(x int, y int) int {
-	return x + y
+//export updatePaddle2Y
+func updatePaddle2Y(delta float32) {
+	g.FieldState.Paddle2Y += delta
 }
 
 func main() {
