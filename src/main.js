@@ -53,11 +53,26 @@ import {initWasm} from "../wasm/wasm.js";
 
 
     wasm.createGame()
+    let lastTimeStamp = 0
+
+    const gameLoop = (timeStamp) => {
+        const timeDelta = timeStamp - lastTimeStamp
+        const secondsPassed = timeDelta / 1000
+        lastTimeStamp = timeStamp
+
+        const fps = Math.round(1 / secondsPassed)
+        console.log(`fps: ${fps}`)
+        console.log(timeDelta)
+
+        wasm.updateGame(timeDelta)
+
+        gameState.ballPosition = {x: wasmBuffer[0] / 5000, y: wasmBuffer[1] / 5000}
+        renderer.render(gameState)
+
+        requestAnimationFrame(gameLoop)
+    }
 
     startButton.onclick = () => {
-        wasm.updateGame()
-
-        gameState.ballPosition = {x: wasmBuffer[0] / 50, y: wasmBuffer[1] / 50}
-        renderer.render(gameState)
+        requestAnimationFrame(gameLoop)
     }
 })()

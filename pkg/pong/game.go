@@ -37,5 +37,5 @@ func NewGame() *Game {
 
 func (g *Game) Update(timeDelta int) {
 	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + 1
-	fmt.Println(g.FieldState)
+	fmt.Println(g.FieldState, timeDelta)
 }
