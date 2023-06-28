@@ -23,21 +23,32 @@ import {initWasm} from "../wasm/wasm.js";
 
     renderer.render(gameState)
 
-    const onUpdate = (payload) => {
-        console.log(payload)
+    startOnlineButton.onclick = async () => {
+        const onUpdate = (payload) => {
+            console.log(payload)
 
-        gameState.ballPosition.x = payload.BallPos[0] / 5000
-        gameState.ballPosition.y = payload.BallPos[1] / 5000
+            gameState.ballPosition.x = payload.BallPos[0] / 5000
+            gameState.ballPosition.y = payload.BallPos[1] / 5000
+            gameState.paddle1Y = payload.Paddle1Y / 500
+            gameState.paddle2Y = payload.Paddle2Y / 500
 
-        requestAnimationFrame(() => renderer.render(gameState))
-    }
+            requestAnimationFrame(() => renderer.render(gameState))
+        }
 
-    const wsUrl = "ws://localhost:8082/pong"
-    const client = new WsClient(wsUrl, onUpdate)
+        const wsUrl = "ws://localhost:8082/pong"
+        const client = new WsClient(wsUrl, onUpdate)
+        await client.waitForConnection()
 
-    startOnlineButton.onclick = () => {
-        gameState.paddle1Y -= 0.1
-        gameState.paddle2Y += 0.1
+        document.addEventListener("keydown", event => {
+            console.log("press", event.key)
+            if (event.key === "w" || event.key === "W" || event.key === "ArrowUp") {
+                client.updatePaddleY(50)
+            }
+
+            if (event.key === "s" || event.key === "S" || event.key === "ArrowDown") {
+                client.updatePaddleY(-50)
+            }
+        })
 
         renderer.render(gameState)
 
@@ -73,26 +84,28 @@ import {initWasm} from "../wasm/wasm.js";
     }
 
     startLocalButton.onclick = () => {
+        document.addEventListener("keydown", event => {
+            console.log("press", event.key)
+
+            if (event.key === "ArrowDown") {
+                wasm.updatePaddle2Y(-50)
+            }
+
+            if (event.key === "ArrowUp") {
+                wasm.updatePaddle2Y(50)
+            }
+
+            if (event.key === "w" || event.key === "W") {
+                wasm.updatePaddle1Y(50)
+            }
+
+            if (event.key === "s" || event.key === "S") {
+                wasm.updatePaddle1Y(-50)
+            }
+        })
+
         requestAnimationFrame(gameLoop)
     }
 
-    document.addEventListener("keydown", event => {
-        console.log("press", event.key)
 
-        if (event.key === "ArrowDown") {
-            wasm.updatePaddle2Y(-50)
-        }
-
-        if (event.key === "ArrowUp") {
-            wasm.updatePaddle2Y(50)
-        }
-
-        if (event.key === "w" || event.key === "W") {
-            wasm.updatePaddle1Y(50)
-        }
-
-        if (event.key === "s" || event.key === "S") {
-            wasm.updatePaddle1Y(-50)
-        }
-    })
 })()

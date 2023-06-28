@@ -28,7 +28,7 @@ func echo(ws *websocket.Conn) {
 
 type wsMessage struct {
 	Message string
-	Payload string
+	Payload interface{}
 }
 
 var (
@@ -85,6 +85,11 @@ func webSocketHandler(ws *websocket.Conn) {
 				isWaiting = true
 			}
 			waitMu.Unlock()
+		}
+
+		if message.Message == "updatePaddle" {
+			deltaY := message.Payload.(float64)
+			c.Game.UpdatePaddle(c, float32(deltaY))
 		}
 
 		fmt.Println(message.Message)

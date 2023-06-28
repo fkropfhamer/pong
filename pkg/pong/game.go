@@ -1,9 +1,5 @@
 package pong
 
-import (
-	"fmt"
-)
-
 type Game struct {
 	FieldState    FieldState
 	stopChan      chan bool
@@ -37,7 +33,7 @@ func NewGame() *Game {
 
 func (g *Game) Update(timeDelta int64) {
 	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + 1
-	fmt.Println(g.FieldState, timeDelta)
+	//fmt.Println(g.FieldState, timeDelta)
 }
 
 func (g *Game) UpdatePaddle1Y(delta float32) {

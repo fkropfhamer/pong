@@ -29,6 +29,16 @@ func (g *WsGame) StopLoop() {
 	fmt.Println("stop Game")
 }
 
+func (g *WsGame) UpdatePaddle(client *Client, delta float32) {
+	if g.Client1 == client {
+		g.Game.UpdatePaddle1Y(delta)
+
+		return
+	}
+
+	g.Game.UpdatePaddle2Y(delta)
+}
+
 func (g *WsGame) StartLoop() {
 	message := GameMessage{
 		Message: "start",
