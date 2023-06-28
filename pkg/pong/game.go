@@ -35,7 +35,15 @@ func NewGame() *Game {
 	return &g
 }
 
-func (g *Game) Update(timeDelta int) {
+func (g *Game) Update(timeDelta int64) {
 	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + 1
 	fmt.Println(g.FieldState, timeDelta)
+}
+
+func (g *Game) UpdatePaddle1Y(delta float32) {
+	g.FieldState.Paddle1Y += delta
+}
+
+func (g *Game) UpdatePaddle2Y(delta float32) {
+	g.FieldState.Paddle2Y += delta
 }

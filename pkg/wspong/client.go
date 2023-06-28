@@ -13,7 +13,7 @@ type GameMessage struct {
 
 type Client struct {
 	Connection     *websocket.Conn
-	Game           *Game
+	Game           *WsGame
 	IsDisconnected bool
 }
 

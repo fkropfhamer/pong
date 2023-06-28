@@ -35,12 +35,12 @@ func updateGame(timeDelta int) {
 
 //export updatePaddle1Y
 func updatePaddle1Y(delta float32) {
-	g.FieldState.Paddle1Y += delta
+	g.UpdatePaddle1Y(delta)
 }
 
 //export updatePaddle2Y
 func updatePaddle2Y(delta float32) {
-	g.FieldState.Paddle2Y += delta
+	g.UpdatePaddle2Y(delta)
 }
 
 func main() {

@@ -2,56 +2,34 @@ package wspong
 
 import (
 	"fmt"
+	"github.com/fkropfhamer/pong/pkg/pong"
 	"time"
 )
 
-type Game struct {
-	Client1       *Client
-	Client2       *Client
-	FieldState    FieldState
-	stopChan      chan bool
-	ballDirection [2]float32
+type WsGame struct {
+	Client1  *Client
+	Client2  *Client
+	Game     *pong.Game
+	stopChan chan bool
 }
 
-type FieldState struct {
-	BallPos  [2]float32
-	Score1   int
-	Score2   int
-	Paddle1Y float32
-	Paddle2Y float32
-}
-
-func NewGame(c1 *Client, c2 *Client) *Game {
-	state := FieldState{
-		BallPos:  [2]float32{0, 0},
-		Paddle1Y: 0,
-		Paddle2Y: 0,
-		Score1:   0,
-		Score2:   0,
-	}
-
-	g := Game{
-		Client1:       c1,
-		Client2:       c2,
-		FieldState:    state,
-		stopChan:      make(chan bool),
-		ballDirection: [2]float32{0, 0},
+func NewGame(c1 *Client, c2 *Client) *WsGame {
+	g := WsGame{
+		Client1:  c1,
+		Client2:  c2,
+		Game:     pong.NewGame(),
+		stopChan: make(chan bool),
 	}
 
 	return &g
 }
 
-func (g *Game) Update(timeDelta int) {
-	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + 1
-	fmt.Println(g.FieldState)
-}
-
-func (g *Game) StopLoop() {
+func (g *WsGame) StopLoop() {
 	g.stopChan <- true
 	fmt.Println("stop Game")
 }
 
-func (g *Game) StartLoop() {
+func (g *WsGame) StartLoop() {
 	message := GameMessage{
 		Message: "start",
 	}
@@ -60,14 +38,18 @@ func (g *Game) StartLoop() {
 	g.Client2.SendMessage(message)
 
 	ticker := time.NewTicker(10 * time.Millisecond)
+	var lastTimeStamp int64 = 0
 	go func() {
 		for {
 			select {
-			case <-ticker.C:
-				g.Update(0)
+			case timeStamp := <-ticker.C:
+				timeDelta := timeStamp.UnixMilli() - lastTimeStamp
+				lastTimeStamp = timeStamp.UnixMilli()
+
+				g.Game.Update(timeDelta)
 				updateMessage := GameMessage{
 					Message: "update",
-					Payload: g.FieldState,
+					Payload: g.Game.FieldState,
 				}
 
 				g.Client1.SendMessage(updateMessage)
