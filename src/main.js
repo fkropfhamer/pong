@@ -45,7 +45,6 @@ import {initWasm} from "../wasm/wasm.js";
     }
 
     const wasm = await initWasm()
-    console.log(wasm.add(1, 2))
 
     const bufferSize = 4
     const bufferPointer = wasm.getBufferPointer()
