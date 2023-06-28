@@ -22,8 +22,8 @@ func createGame() {
 }
 
 //export updateGame
-func updateGame(timeDelta int64) {
-	g.Update(timeDelta)
+func updateGame(timeDelta int) {
+	g.Update(int64(timeDelta))
 
 	ballState := g.FieldState.BallPos
 
