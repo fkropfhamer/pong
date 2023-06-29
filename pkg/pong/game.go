@@ -64,15 +64,11 @@ func (g *Game) Update(timeDelta int64) {
 	}
 
 	if g.FieldState.BallPos[0] > xConstraint {
-		g.FieldState.BallPos[0] = 0
-		g.FieldState.BallPos[1] = 0
-		g.FieldState.Score1 += 1
+		g.player1Score()
 	}
 
 	if g.FieldState.BallPos[0] < -xConstraint {
-		g.FieldState.BallPos[0] = 0
-		g.FieldState.BallPos[1] = 0
-		g.FieldState.Score2 += 1
+		g.player2Score()
 	}
 
 	if g.FieldState.BallPos[1] > yConstraint || g.FieldState.BallPos[1] < -yConstraint {
@@ -86,4 +82,16 @@ func (g *Game) UpdatePaddle1Y(delta float32) {
 
 func (g *Game) UpdatePaddle2Y(delta float32) {
 	g.FieldState.Paddle2Y += delta
+}
+
+func (g *Game) player1Score() {
+	g.FieldState.BallPos[0] = 0
+	g.FieldState.BallPos[1] = 0
+	g.FieldState.Score1 += 1
+}
+
+func (g *Game) player2Score() {
+	g.FieldState.BallPos[0] = 0
+	g.FieldState.BallPos[1] = 0
+	g.FieldState.Score2 += 1
 }
