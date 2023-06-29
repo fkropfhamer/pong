@@ -3,7 +3,8 @@ package pong
 const fieldHeight = 500
 const fieldWidth = 800
 const ballSize = 10
-const xConstraint = fieldWidth - ballSize
+const paddleConstraint = fieldWidth - ballSize
+const xConstraint = paddleConstraint + 5
 const yConstraint = fieldHeight - ballSize
 const paddleHeight = 100
 
@@ -50,8 +51,28 @@ func (g *Game) Update(timeDelta int64) {
 	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + xDelta
 	g.FieldState.BallPos[1] = g.FieldState.BallPos[1] + yDelta
 
-	if g.FieldState.BallPos[0] > xConstraint || g.FieldState.BallPos[0] < -xConstraint {
-		g.ballDirection[0] = -g.ballDirection[0]
+	if g.FieldState.BallPos[0] > paddleConstraint {
+		if g.FieldState.BallPos[1] < g.FieldState.Paddle2Y+paddleHeight && g.FieldState.BallPos[1] > g.FieldState.Paddle2Y-paddleHeight {
+			g.ballDirection[0] = -g.ballDirection[0]
+		}
+	}
+
+	if g.FieldState.BallPos[0] < -paddleConstraint {
+		if g.FieldState.BallPos[1] < g.FieldState.Paddle1Y+paddleHeight && g.FieldState.BallPos[1] > g.FieldState.Paddle1Y-paddleHeight {
+			g.ballDirection[0] = -g.ballDirection[0]
+		}
+	}
+
+	if g.FieldState.BallPos[0] > xConstraint {
+		g.FieldState.BallPos[0] = 0
+		g.FieldState.BallPos[1] = 0
+		g.FieldState.Score1 += 1
+	}
+
+	if g.FieldState.BallPos[0] < -xConstraint {
+		g.FieldState.BallPos[0] = 0
+		g.FieldState.BallPos[1] = 0
+		g.FieldState.Score2 += 1
 	}
 
 	if g.FieldState.BallPos[1] > yConstraint || g.FieldState.BallPos[1] < -yConstraint {
