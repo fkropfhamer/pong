@@ -31,7 +31,7 @@ export class WebGPURenderer {
     }
 
     setupPaddleRendering = (canvasFormat) => {
-        const paddleUniformArray = new Float32Array([-0.5, 0, 0.5, 0]);
+        const paddleUniformArray = new Float32Array([-0.91, 0, 0.91, 0]);
         this.paddleUniformBuffer = this.device.createBuffer({
             label: "paddle Uniforms",
             size: paddleUniformArray.byteLength,
@@ -152,7 +152,7 @@ export class WebGPURenderer {
         pass.setPipeline(this.middleLinePipeline)
         pass.draw(2)
 
-        const paddleUniformArray = new Float32Array([-0.5, paddle1Y, 0.5, paddle2Y]);
+        const paddleUniformArray = new Float32Array([-0.81, paddle1Y, 0.81, paddle2Y]);
         this.device.queue.writeBuffer(this.paddleUniformBuffer, 0, paddleUniformArray);
 
         pass.setPipeline(this.paddlePipeline)

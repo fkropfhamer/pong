@@ -27,8 +27,8 @@ import {initWasm} from "../wasm/wasm.js";
         const onUpdate = (payload) => {
             console.log(payload)
 
-            gameState.ballPosition.x = payload.BallPos[0] / 5000
-            gameState.ballPosition.y = payload.BallPos[1] / 5000
+            gameState.ballPosition.x = payload.BallPos[0] / 1000
+            gameState.ballPosition.y = payload.BallPos[1] / 500
             gameState.paddle1Y = payload.Paddle1Y / 500
             gameState.paddle2Y = payload.Paddle2Y / 500
 
@@ -77,7 +77,7 @@ import {initWasm} from "../wasm/wasm.js";
         gameState.paddle1Y = wasmBuffer[2] / 500
         gameState.paddle2Y = wasmBuffer[3] / 500
 
-        gameState.ballPosition = {x: wasmBuffer[0] / 5000, y: wasmBuffer[1] / 5000}
+        gameState.ballPosition = {x: wasmBuffer[0] / 1000, y: wasmBuffer[1] / 500}
         renderer.render(gameState)
 
         requestAnimationFrame(gameLoop)

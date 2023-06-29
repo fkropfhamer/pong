@@ -1,9 +1,16 @@
 package pong
 
+const fieldHeight = 500
+const fieldWidth = 800
+const ballSize = 10
+const xConstraint = fieldWidth - ballSize
+const yConstraint = fieldHeight - ballSize
+const paddleHeight = 100
+
 type Game struct {
 	FieldState    FieldState
-	stopChan      chan bool
 	ballDirection [2]float32
+	isRunning     bool
 }
 
 type FieldState struct {
@@ -25,15 +32,31 @@ func NewGame() *Game {
 
 	g := Game{
 		FieldState:    state,
-		ballDirection: [2]float32{0, 0},
+		ballDirection: [2]float32{0.2, 0.3},
 	}
 
 	return &g
 }
 
 func (g *Game) Update(timeDelta int64) {
-	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + 1
-	//fmt.Println(g.FieldState, timeDelta)
+	if !g.isRunning {
+		g.isRunning = true
+		timeDelta = 1
+	}
+
+	xDelta := g.ballDirection[0] * float32(timeDelta)
+	yDelta := g.ballDirection[1] * float32(timeDelta)
+
+	g.FieldState.BallPos[0] = g.FieldState.BallPos[0] + xDelta
+	g.FieldState.BallPos[1] = g.FieldState.BallPos[1] + yDelta
+
+	if g.FieldState.BallPos[0] > xConstraint || g.FieldState.BallPos[0] < -xConstraint {
+		g.ballDirection[0] = -g.ballDirection[0]
+	}
+
+	if g.FieldState.BallPos[1] > yConstraint || g.FieldState.BallPos[1] < -yConstraint {
+		g.ballDirection[1] = -g.ballDirection[1]
+	}
 }
 
 func (g *Game) UpdatePaddle1Y(delta float32) {
