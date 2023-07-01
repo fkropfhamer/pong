@@ -1,5 +1,5 @@
 import '../style.css'
-import {WebGPURenderer} from "./render.js";
+import {getAvailableRenderer} from "./render.js";
 import {WsClient} from "./socket.js";
 import {initWasm} from "../wasm/wasm.js";
 
@@ -8,11 +8,7 @@ import {initWasm} from "../wasm/wasm.js";
     const startLocalButton = document.getElementById("start-local");
     const canvas = document.getElementById("canvas")
 
-    const renderer = new WebGPURenderer()
-    if (!renderer.isSupported()) {
-        console.log("web gpu not supported")
-    }
-
+    const renderer = getAvailableRenderer()
     await renderer.init(canvas)
 
     const gameState = {
@@ -106,6 +102,4 @@ import {initWasm} from "../wasm/wasm.js";
 
         requestAnimationFrame(gameLoop)
     }
-
-
 })()

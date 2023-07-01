@@ -2,8 +2,9 @@ import middleLineShader from '../shader/middleLine.wgsl?raw'
 import paddleShader from '../shader/paddle.wgsl?raw'
 import ballShader from '../shader/ball.wgsl?raw'
 
-export class WebGPURenderer {
-    isSupported = () => {
+class WebGPURenderer {
+    static isSupported = () => {
+        return false
         return !!navigator.gpu
     }
 
@@ -169,4 +170,27 @@ export class WebGPURenderer {
         pass.end()
         this.device.queue.submit([encoder.finish()]);
     }
+}
+
+class Context2DRenderer {
+    init = async (canvas) => {
+        this.ctx = canvas.getContext("2d")
+        this.canvas = canvas
+    }
+
+    render = ({ paddle1Y, paddle2Y, ballPosition }) => {
+        this.ctx.fillStyle = "black"
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+
+        this.ctx.fillStyle = "red"
+        this.ctx.fillRect(130, 190, 40, 60)
+    }
+}
+
+export const getAvailableRenderer = () => {
+    if (WebGPURenderer.isSupported()) {
+        return new WebGPURenderer()
+    }
+
+    return new Context2DRenderer()
 }

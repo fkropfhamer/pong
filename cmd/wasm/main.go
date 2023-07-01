@@ -44,5 +44,5 @@ func updatePaddle2Y(delta float32) {
 }
 
 func main() {
-	fmt.Println("Go Web Assembly")
+	fmt.Println("wasm loaded")
 }
